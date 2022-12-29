@@ -1,3 +1,4 @@
+using System.Security.Authentication.ExtendedProtection;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +14,19 @@ builder.Services.AddDbContext<DataContext>(opts =>
 {
     opts.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.AddCors(opts =>
+{
+    opts.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:4200");
+    });
+});
 
 //* Middleware
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 
